@@ -1,0 +1,65 @@
+@if (loading) {
+    <app-loading-overlay [loadingMessage]="loadingMessage"></app-loading-overlay>
+}
+
+<div class="text-center text-4xl font-bold mb-4">
+    History
+</div>
+
+<p-table
+    [value]="history"
+    [paginator]="true"
+    [rows]="20"
+    [rowHover]="true"
+    [rowsPerPageOptions]="[5, 10, 20]"
+    [tableStyle]="{ 'min-width': '50rem' }"
+>
+    <ng-template pTemplate="header">
+        <tr>
+            <th pSortableColumn="uploaded_folder_name" style="width:20%">
+                Uploaded Folder Name <p-sortIcon field="uploaded_folder_name" />
+            </th>
+            <th pSortableColumn="date" style="width:14%">
+                Date <p-sortIcon field="date" />
+            </th>
+            <th pSortableColumn="total_images" style="width:14%">
+                Total Images <p-sortIcon field="total_images" />
+            </th>
+            <th pSortableColumn="benign_count" style="width:14%">
+                Benign Count <p-sortIcon field="benign_count" />
+            </th>
+            <th pSortableColumn="malignant_count" style="width:14%">
+                Malignant Count <p-sortIcon field="malignant_count" />
+            </th>
+            <th pSortableColumn="normal_count" style="width:14%">
+                Normal Count <p-sortIcon field="normal_count" />
+            </th>
+            <th pSortableColumn="pretrained_model_name" style="width:14%">
+                Pretrained Model <p-sortIcon field="pretrained_model_name" />
+            </th>
+            <th style="width:10%">
+                Export Data
+            </th>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-historyDetail>
+        <tr [pSelectableRow]="rowData" (click)='openHistoryDetail(historyDetail)'>
+            <td>{{ historyDetail.uploaded_folder_name }}</td>
+            <td>{{ historyDetail.date | date:'dd/MM/yyyy hh:mm a': 'UTC' }}</td>
+            <td>{{ historyDetail.total_images }}</td>
+            <td>{{ historyDetail.benign_count }}</td>
+            <td>{{ historyDetail.malignant_count }}</td>
+            <td>{{ historyDetail.normal_count }}</td>
+            <td>{{ historyDetail.pretrained_model_name }}</td>
+            <td>
+                <p-button icon="pi pi-download" [rounded]="true" [text]="true" (click)="exportData(rowData)"></p-button>
+            </td>
+            <td></td>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+        <tr>
+            <td colspan="8">No history found.</td>
+        </tr>
+    </ng-template>
+</p-table>

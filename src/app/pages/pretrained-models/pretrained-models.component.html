@@ -1,0 +1,62 @@
+@if (loading) {
+    <app-loading-overlay [loadingMessage]="loadingMessage"></app-loading-overlay>
+}
+
+<div class="text-center text-4xl font-bold">
+    Pretrained Models
+</div>
+<p-toolbar styleClass="mb-4 gap-2">
+    <ng-template pTemplate="left">
+        <p-button  severity="success"  label="New"  icon="pi pi-plus"  class="mr-2"  (onClick)="openNew()" />
+    </ng-template>
+    <ng-template pTemplate="right"></ng-template>
+</p-toolbar>
+
+<p-table
+    [value]="pretrainedModels"
+    [paginator]="true"
+    [rows]="5"
+    [rowHover]="true"
+    [rowsPerPageOptions]="[5, 10, 20]"
+    [tableStyle]="{ 'min-width': '50rem' }"
+    [(selection)]="selectedModels"
+>
+    <ng-template pTemplate="header">
+        <tr>
+            <th pSortableColumn="name" style="width:17%">
+                Name <p-sortIcon field="name" />
+            </th>
+            <th pSortableColumn="description" style="width:17%">
+                Description <p-sortIcon field="description" />
+            </th>
+            <th pSortableColumn="pth_file_name" style="width:17%">
+                PTH File Name <p-sortIcon field="pth_file_name" />
+            </th>
+            <th pSortableColumn="model_py_file_name" style="width:17%">
+                Model py File Name <p-sortIcon field="model_py_file_name" />
+            </th>
+            <th pSortableColumn="params_py_file_name" style="width:17%">
+                Params py File Name <p-sortIcon field="params_py_file_name" />
+            </th>
+            <th pSortableColumn="folder_name" style="width:15%">
+                Folder Name <p-sortIcon field="folder_name" />
+            </th>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-model>
+        <tr>
+            <td>{{ model.name }}</td>
+            <td>{{ model.description }}</td>
+            <td>{{ model.pth_file_name }}</td>
+            <td>{{ model.model_py_file_name }}</td>
+            <td>{{ model.params_py_file_name }}</td>
+            <td>{{ model.folder_name }}</td>
+            <td></td>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+        <tr>
+            <td colspan="6">No models found.</td>
+        </tr>
+    </ng-template>
+</p-table>

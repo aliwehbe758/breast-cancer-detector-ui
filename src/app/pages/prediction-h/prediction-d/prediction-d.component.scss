@@ -1,0 +1,17 @@
+div.blurred {
+    filter: blur(5px);
+    transition: filter 0.3s ease;
+}
+::ng-deep {
+    p-dialog.zoomed-image-dialog {
+        div.p-dialog-content {
+            display: flex;
+            justify-content: center;
+        }
+        @media screen and (max-width: 800px) {
+            .p-dialog {
+                width: 90vw;
+            }
+        }
+    }
+}

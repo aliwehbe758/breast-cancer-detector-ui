@@ -1,0 +1,102 @@
+@if (loading) {
+    <app-loading-overlay [loadingMessage]="loadingMessage"></app-loading-overlay>
+}
+
+@if (predictionH?.details?.length > 0) {
+    <div [ngClass]="{'blurred': openDialog}" class="mt-3">
+        <p-card>
+            <ng-template  pTemplate="header">
+                <div class="grid px-4 pt-4">
+                    <div class="col-6 flex flex-column">
+                        <div class="p-card-title">Total: {{predictionH.details.length}} image(s)</div>
+                        <ul>
+                            <li>Benign: <b>{{predictionH.benign_count}}</b></li>
+                            <li>Malignant: <b>{{predictionH.malignant_count}}</b></li>
+                            <li>Normal: <b>{{predictionH.normal_count}}</b></li>
+                        </ul>   
+                    </div>
+                    <div class="col-6 flex flex-column align-items-end">
+                        <div class="text-base">
+                            Uploaded Folder Name: <b>{{predictionH.uploaded_folder_name}}</b>
+                        </div>
+                        <div class="text-base mt-2">
+                            <span>
+                                Date: <b>{{predictionH.date | date:'dd/MM/yyyy hh:mm a': 'UTC' }}</b>
+                            </span>
+                        </div>
+                        <div class="text-base mt-2">
+                            <span>
+                                Model Used: <b>{{predictionH.pretrained_model_name}}</b>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </ng-template>
+            <div class="image-container text-center grid justify-content-center">
+                @for (img of predictionH.details; track $index) {
+                    <div class="p-3">
+                        <div class="flex flex-column align-items-center border-round-sm shadow-5 p-1 cursor-pointer"
+                            (click)="zoomImage($index)">
+                            <div class="flex">
+                                <img [src]="'data:image/png;base64,' + img.image" [alt]="img.file_name"
+                                    class="w-10rem h-10rem m-2 cursor-pointer border-round-sm border-2 border-300">
+                                <img [src]="'data:image/png;base64,' + img.grad_cam" [alt]="img.file_name + '_' + img.grad_cam"
+                                    class="w-10rem h-10rem m-2 cursor-pointer border-round-sm border-2 border-300">
+                            </div>
+                            <div class="flex">
+                                <span> 
+                                    <b [ngClass]="{
+                                        'text-orange-400': img.prediction === prediction.Benign,
+                                        'text-red-500': img.prediction === prediction.Malignant,
+                                        'text-green-500': img.prediction === prediction.Normal
+                                    }">
+                                    {{img.prediction}}&nbsp;
+                                </b>
+                                </span>
+                                <span>(Proba: <b>{{img.probability.toString().slice(0, 4)}}</b>)</span>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </p-card>
+    </div>
+}
+
+<p-dialog [(visible)]="openDialog" [maximizable]="true" [modal]="true" [header]="clickedImage?.file_name"
+    (onMaximize)="isMaximized=$event.maximized" (onHide)="isMaximized=false" class="zoomed-image-dialog responsive-dialog">
+    <div class="flex flex-column align-items-center w-full h-full" 
+        [ngStyle]="{'max-height': '65vh' ? !isMaximized : '85vh'}">
+        <div class="flex align-items-center justify-content-between w-full h-full">
+            <p-button icon="pi pi-chevron-left" (click)="previousImage()" [rounded]="true" [outlined]="true"></p-button>
+            <div class="flex flex-column align-items-center border-round-sm shadow-5 p-1 mx-3 max-h-full">
+                <div class="grid overflow-y-auto">
+                    <div class="col-12 flex flex-wrap justify-content-center">
+                        <img [src]="'data:image/png;base64,' + clickedImage?.image" [alt]="clickedImage?.file_name" class="m-2 border-round-sm"
+                            [ngClass]="{'w-30rem h-30rem': !isMaximized}"
+                            [ngStyle]="{'max-width': isMaximized ? '50vw' : '100%', 'max-height': isMaximized ? '55vh' : '100%'}">
+                        <img [src]="'data:image/png;base64,' + clickedImage?.grad_cam" [alt]="clickedImage?.file_name" class="m-2 border-round-sm"
+                            [ngClass]="{'w-30rem h-30rem': !isMaximized}"
+                            [ngStyle]="{'max-width': isMaximized ? '50vw' : '100%', 'max-height': isMaximized ? '55vh' : '100%'}">
+                    </div>
+                </div>
+                <div class="flex align-items-center">
+                    <span>
+                        <b [ngClass]="{
+                            'text-orange-400': clickedImage?.prediction === prediction.Benign,
+                            'text-red-500': clickedImage?.prediction === prediction.Malignant,
+                            'text-green-500': clickedImage?.prediction === prediction.Normal
+                        }">
+                            {{clickedImage?.prediction}}&nbsp;
+                        </b>
+                    </span>
+                    <span>(Proba: <b>{{clickedImage?.probability.toString().slice(0, 4)}}</b>)</span>
+                </div>
+            </div>
+            <p-button icon="pi pi-chevron-right" (click)="nextImage()" [rounded]="true" [outlined]="true"></p-button>
+        </div>
+        <div class="mt-2 font-bold">
+            {{clickedImageIndex+1}}/{{predictionH?.details?.length}}
+        </div>
+    </div>
+</p-dialog>

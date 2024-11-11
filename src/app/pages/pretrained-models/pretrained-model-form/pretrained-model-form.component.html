@@ -1,0 +1,63 @@
+<form [formGroup]="modelForm" (ngSubmit)="onSubmit()">
+    <div class="grid p-fluid">
+        <div class="col-12">
+            <label for="name">Name</label>
+            <input pInputText formControlName="name" id="name" />
+        </div>        
+        <div class="col-12">
+            <label for="description">Description</label>
+            <input pInputText formControlName="description" id="description" />
+        </div>
+        <div class="col-12">
+            <label for="pth_file_name">PTH File</label>
+            <p-inputGroup>
+                <input type="text" pInputText id="pth_file_name" formControlName="pth_file_name" [readOnly]="true" />
+                @if (!modelForm.get('pth_file_name').value) {
+                    <p-fileUpload mode="basic" [showUploadButton]="false"
+                        (onSelect)="onPthFileSelected($event)" [customUpload]="true" maxFileSize="1000000000">
+                    </p-fileUpload>
+                }
+                @else {
+                    <button type="button" pButton (click)="clearPthFile()" icon="pi pi-trash" class="p-button-danger"></button>
+                }
+            </p-inputGroup>
+        </div>
+        <div class="col-12">
+            <label for="model_py_file_name">Model py File</label>
+            <p-inputGroup>
+                <input type="text" pInputText id="model_py_file_name" formControlName="model_py_file_name" [readOnly]="true" />
+                @if (!modelForm.get('model_py_file_name').value) {
+                    <p-fileUpload mode="basic" [showUploadButton]="false"
+                        (onSelect)="onModelPyFileSelected($event)" [customUpload]="true" maxFileSize="1000000000">
+                    </p-fileUpload>                
+                }
+                @else {
+                    <button type="button" pButton (click)="clearModelPyFile()" icon="pi pi-trash" class="p-button-danger"></button>
+                }
+            </p-inputGroup>
+        </div>
+        <div class="col-12">
+            <label for="params_py_file_name">Params py File</label>
+            <p-inputGroup>
+                <input type="text" pInputText id="params_py_file_name" formControlName="params_py_file_name" [readOnly]="true" />
+                @if (!modelForm.get('params_py_file_name').value) {
+                    <p-fileUpload mode="basic" [showUploadButton]="false"
+                        (onSelect)="onParamsPyFileSelected($event)" [customUpload]="true" maxFileSize="1000000000">
+                    </p-fileUpload>
+                }
+                @else {
+                    <button type="button" pButton (click)="clearParamsPyFile()" icon="pi pi-trash" class="p-button-danger"></button>
+                }
+            </p-inputGroup>
+        </div>
+        <div class="col-12">
+            <label for="folder_name">Folder Name</label>
+            <input pInputText formControlName="folder_name" id="folder_name" />
+        </div>
+    </div>
+    <div class="grid">
+        <div class="col-12 flex justify-content-end">
+            <p-button type="submit" label="Save"></p-button>
+        </div>
+    </div>
+</form>

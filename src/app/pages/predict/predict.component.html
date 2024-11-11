@@ -1,0 +1,71 @@
+@if (loading) {
+    <app-loading-overlay [loadingMessage]="loadingMessage"></app-loading-overlay>
+}
+
+<div [ngClass]="{'blurred': openDialog}" class="grid justify-content-center">
+    <div class="col-12 sm:col-12 md:col-7 lg:col-7 xl:col-5">
+        <div class="card p-card flex flex-column">
+            <span class="p-card-title">Select Folder</span>
+            <p class="m-0">Choose a folder containing images to display.</p>
+            <div class="grid justify-content-center">
+                <div>
+                    <label for="folderInput" class="p-button w-11rem font-bold align-self-center mt-6">
+                        <i class="pi pi-upload mr-2"></i>
+                        Select Folder
+                    </label>
+                    <input #inputElement type="file" id="folderInput" class="file-input" webkitdirectory directory multiple (change)="onFolderSelected($event)">
+                </div>
+                @if (images.length > 0 || predictionCompleted) {
+                    <div class="flex align-items-end ml-2">
+                        <button pButton label="Clear" (click)="clearSelectedFolder(inputElement)" class="p-button-secondary mr-2" icon="pi pi-trash"></button>
+                    </div>
+                }
+            </div>
+            @if (images.length > 0 && !predictionCompleted) {
+                <div class="flex align-self-center mt-3">
+                    <p-dropdown [options]="pretrainedModels" optionLabel="name" optionValue="id" 
+                        [(ngModel)]="selectedModelId" placeholder="Select Model" class="mr-2">
+                    </p-dropdown>
+                    <button pButton label="Predict" (click)="predict()" [disabled]="!selectedModelId" class="p-button-success" icon="pi pi-bolt"></button>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@if (predictionCompleted) {
+    <app-prediction-d [predictionH]="predictionH"></app-prediction-d>
+}
+@else if (images.length > 0) {
+    <div [ngClass]="{'blurred': openDialog}" class="mt-3">
+        <p-card [header]="'Total: ' + images.length + ' image(s)'">
+            <div class="image-container text-center grid justify-content-center">
+                @for (img of images; track $index) {
+                    <img [src]="'data:image/png;base64,' + img.image" [alt]="img.file_name" (click)="zoomImage($index)" 
+                        class="w-10rem h-10rem m-2 cursor-pointer border-round-sm border-2 border-300">
+                }
+            </div>
+        </p-card>
+    </div>
+}
+<p-dialog [(visible)]="openDialog" [maximizable]="true" [modal]="true" [header]="clickedImage?.file_name"
+    (onMaximize)="isMaximized=$event.maximized" (onHide)="isMaximized=false" class="zoomed-image-dialog responsive-dialog">
+    <div class="flex flex-column align-items-center w-full" [ngClass]="{'h-full': isMaximized}" 
+        [ngStyle]="{'max-height': '65vh' ? !isMaximized : '85vh'}">
+        <div class="flex align-items-center justify-content-between w-full h-full">
+            <p-button icon="pi pi-chevron-left" (click)="previousImage()" [rounded]="true" [outlined]="true"></p-button>
+            <div class="flex flex-column border-round-sm p-1 mx-3 max-h-full">
+                <div class="grid">
+                    <div class="col-12 flex flex-wrap justify-content-center">
+                        <img [src]="'data:image/png;base64,' + clickedImage?.image" [alt]="clickedImage?.file_name" class="m-2 border-round-sm max-w-full max-h-full"
+                            [ngClass]="{'w-30rem h-30rem': !isMaximized}">
+                    </div>
+                </div>
+            </div>
+            <p-button icon="pi pi-chevron-right" (click)="nextImage()" [rounded]="true" [outlined]="true"></p-button>
+        </div>
+        <div class="mt-2 font-bold">
+            {{clickedImageIndex+1}}/{{images.length}}
+        </div>
+    </div>
+</p-dialog>
